@@ -2,24 +2,35 @@ import { useState } from "react";
 import { Button, StyleSheet, Text, View, TextInput, TextInputBase } from "react-native";
 
 const Home = () => {
-    const [text, setText] = useState("");
+    const [value, setValue] = useState(0);
+
+    const getRandomValue = () => {
+        return ;
+    };
 
     return (
         <View>
-            <TextInput 
+            <Button
                 style={styles.textInput}
-                onChangeText={text => setText(text)}
+                title="Increase"
+                onPress={()=> {setValue(value+Math.floor(Math.random() * 10000) + 1)}}
+            />
+
+            <Button
+                title="Decrease"
+                style={styles.textInput}
+                onPress={() => {setValue(value-(Math.floor(Math.random() * 10000) + 1))}}
             />
 
             <Text style={styles.text}>
-                {text}
+                {value}
             </Text>
         </View>
     )
 }
 
 const styles = StyleSheet.create({
-    textInput: {
+    button: {
         height: 40,
         borderColor: 'gray',
         borderWidth: 1,
