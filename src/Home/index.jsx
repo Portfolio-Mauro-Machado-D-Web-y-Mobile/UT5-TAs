@@ -1,90 +1,77 @@
 import { useState } from "react";
-import { Button, StyleSheet, Text, View, TextInput, FlatList } from "react-native";
+import { Button, StyleSheet, Text, View, TextInput, Image, ScrollView } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
-
-
 const Home = () => {
     const [text, setText] = useState("");
-    const [tasks, setTasks] = useState([
-        { key: 1, text: "Task 1" },
-        { key: 2, text: "Task 2" },
-        { key: 3, text: "Task 3" },
-    ]);
+    const [movie, setMovie] = useState(null); // Initialize as null
 
-
-
-    const addTask = () => {
-        if (text) {
-            setTasks([...tasks, { key: tasks.length + 1, text }]);
-            setText("");
+    const searchMovie = async () => {
+        const words = text.split(/\s+/);
+        const query = words.join("+");
+        
+        try {
+            const response = await fetch(`http://www.omdbapi.com/?t=${query}&apikey=5b2ecc76`);
+            const data = await response.json();
+            setMovie(data); // Update movie state
+            console.log(data); // Log the fetched data for debugging
+        } catch (error) {
+            console.error('Error fetching movie:', error);
         }
-    };
-
-    const deleteTask = (key) => {
-        setTasks(tasks.filter(task => task.key !== key));
-        console.log("uwu");
-    };
-
-    const renderRightActions = (key) => {
-        return (
-            <Button style={styles.Button} onPress={() => deleteTask(key)} title="Delete" />
-         );
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <TextInput
-                style={styles.textInput}
-                placeholder="Add a new task"
-                value={text}
-                onChangeText={setText}
-            />
-            <Button title="Add Task" onPress={addTask} />
-            <FlatList
-                data={tasks}
-                renderItem={({ item }) => (
-                    <View style={styles.card}>
-                        <Swipeable renderRightActions={()=> renderRightActions(item.key)}>
-                            <Text style={styles.text}>{item.text}</Text>
-                        </Swipeable>
+            <ScrollView>
+                <TextInput
+                    style={styles.textInput}
+                    placeholder="Type movie title"
+                    value={text}
+                    onChangeText={setText}
+                />
+                <Button title="Search" onPress={searchMovie} />
+                {movie && movie.Title ? ( 
+                    <View>
+                        <Image style={styles.image} source={{ uri: movie.Poster }} />
+                        <Text style={styles.subtitle}>{movie.Title}</Text>
+                        <Text style={styles.text}>{movie.Plot}</Text>
                     </View>
+                ) : (
+                    <Text>No movie found</Text> 
                 )}
-                keyExtractor={(item) => item.key.toString()}
-            />
+            </ScrollView>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
-    card: {
-        backgroundColor: 'white',
-        padding: 10,
-        marginVertical: 5,
-        borderRadius: 5,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-        elevation: 1,
-    },
     container: {
-        padding: 20,
         flex: 1,
+        padding: 16,
+        justifyContent: 'center',
     },
     textInput: {
         height: 40,
         borderColor: 'gray',
         borderWidth: 1,
         marginBottom: 10,
-        paddingLeft: 5,
+        paddingHorizontal: 8,
+    },
+    subtitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 8,
     },
     text: {
-        fontSize: 20,
-        textAlign: 'center',
-        margin: 10,
+        fontSize: 16,
+        marginBottom: 8,
+    },
+    image: {
+        width: 300,
+        height: 450,
+        marginBottom: 10,
+        marginTop: 10,
     },
 });
 
