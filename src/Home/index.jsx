@@ -4,7 +4,7 @@ import { StyleSheet, View, Button, Image, Alert } from "react-native";
 
 
 
-//funciona bastante raro
+//funciona bastante raro en mi telefono
 
 const Home = () => {
     const [image, setImage] = useState(null);
